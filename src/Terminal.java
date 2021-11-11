@@ -240,7 +240,7 @@ public class Terminal {
         }
     }
 
-    public void cp(String[] args) throws IOException {
+    public void cp(String[] args) {
         if (args == null || args.length == 1) {
             System.out.println("Wrong number of arguments");
         } else {
@@ -256,46 +256,74 @@ public class Terminal {
                     fileLines = bufferedLines.readLine();
                 }
                 writeLines.close();
-            }
+            } catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
         }
     }
     public void cp_r(String[] args) {
-        if (args == null || args.length == 1) {
+        if (args == null || args.length == 1 || args.length >= 3) {
             System.out.println("Wrong number of arguments");
         } else {
-            //			  Path sourceDirPath = Paths.get(System.getProperty("user.dir") + "\\" + args[0]);
-            //			  Path dstDirPath = Paths.get(System.getProperty("user.dir") + "\\" + args[1]);
-            //			  try {
-            //				Files.copy(sourceDirPath, dstDirPath);
-            //			} catch (IOException e) {
-            //				// TODO Auto-generated catch block
-            //				e.printStackTrace();
-            //			}
+        	 String firstToBeRead = System.getProperty("user.dir") + "\\" + args[0];
+             String secondToBeRead = System.getProperty("user.dir") + "\\" + args[1];
+             File check_1 = new File(firstToBeRead);
+             File check_2 = new File(secondToBeRead);
+             createAndOrCopyDirectory(check_1, check_2);
+             File src = new File(check_1, "f1");
+             System.out.println(src);
 
-            String firstToBeRead = System.getProperty("user.dir") + "\\" + args[0];
-            String secondToBeRead = System.getProperty("user.dir") + "\\" + args[1];
-            File check_1 = new File(firstToBeRead);
-            File check_2 = new File(secondToBeRead);
-
-
-            try {
-                FileUtils.copyDirectory(check_1, check_2);
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            //	          String[] paths = check_1.list();
-            //	          for(int i = 0; i < paths.length; i++)
-            //	          {
-            //	        	 File temp = new File(paths[i]);
-            //	        	 if(temp.isDirectory())
-            //	        	 {
-            //	        		 
-            //	        	 }
-            //	          }	
         }
+    }
+    public void createAndOrCopyDirectory(File srcDir, File dstDir) {
+    	if(!dstDir.exists())
+    	{
+    	
+    		dstDir.mkdir();
+    	}
+		int counter = srcDir.list().length;
+		int i = 0;
+		while(i >= counter)
+		{
+			checkDirChildren(new File(srcDir, srcDir.list()[i]), new File(dstDir, dstDir.list()[i]));
+			counter--;
+		}
+    }
+    
+    public void checkDirChildren(File src, File dst)
+    {
+    	if(src.isDirectory())
+    	{
+    		createAndOrCopyDirectory(src, dst);
+    	}
+    	else
+    	{
+    		copyFile(src, dst);
+    	}
+    }
+    public void copyFile(File src, File dst)
+    {
+    	
+    	try (BufferedReader bufferedLines = new BufferedReader(new FileReader(src))) {
+            String fileLines = bufferedLines.readLine();
+            BufferedWriter writeLines = new BufferedWriter(new FileWriter(dst, true));
+            while (fileLines != null) {
 
+                writeLines.append(fileLines);
+                writeLines.append('\n');
+                fileLines = bufferedLines.readLine();
+            }
+            writeLines.close();
+        } catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
     }
     //C:\Users\CompuStore\OneDrive\Documents\GitHub\CLI
     //This method will choose the suitable command method to be called
@@ -330,12 +358,7 @@ public class Terminal {
                 touch(parser.getArgs());
                 break;
             case "cp":
-                try {
-                    cp(parser.getArgs());
-                } catch (IOException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                }
+            	cp(parser.getArgs());
                 break;
             case "cp-r":
                 cp_r(parser.getArgs());
