@@ -87,7 +87,6 @@ public class Terminal {
             }
             //QUESTION HERE
             else if(Files.isDirectory(Paths.get(args[0]))) {
-                System.out.println(System.getProperty("user.dir"));
                 System.setProperty("user.dir", args[0]);
                 System.out.println(System.getProperty("user.dir"));
             }
@@ -186,6 +185,16 @@ public class Terminal {
 
 	  }
 	  
+	  public void rm(String [] args) 
+	  {
+		  File toBeDeletedFile = new File(pwd()+ "\\" + args[0]);
+		  if(!toBeDeletedFile.delete())
+		  {
+			  System.out.println("File Doesn't Exist");
+		  }
+		  
+	  }
+	  
 	  //C:\Users\CompuStore\OneDrive\Documents\GitHub\CLI
 	//This method will choose the suitable command method to be called
     public void chooseCommandAction(){
@@ -223,6 +232,7 @@ public class Terminal {
             case "cp -r":
                 break;
             case "rm":
+            	rm(parser.getArgs());
                 break;
             case "cat":
                 break;
@@ -238,11 +248,21 @@ public class Terminal {
 
     public static void main(String[] args){
         Terminal t = new Terminal();
-        try (Scanner scan = new Scanner(System.in)) {
+        while(true)
+        { 
+        	Scanner scan = new Scanner(System.in);
+        	t.parser = new Parser();
+        	System.out.print('>');
+        	t.parser.parse(scan.nextLine());
+        	t.chooseCommandAction();
+        }
+        
+        
+        /*try (Scanner scan = new Scanner(System.in)) {
 			t.parser = new Parser();
 			System.out.print(">");
 			t.parser.parse(scan.nextLine());
 		}
-        t.chooseCommandAction();
+        t.chooseCommandAction();*/
     }
 }
