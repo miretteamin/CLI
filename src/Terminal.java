@@ -1,6 +1,6 @@
 /**
  * Christina Montasser Saad     20190380
- * Karim Mostafa Abd El Monaem  20190388
+ * Karim Mostafa Abd ElMonem    20190388
  * Mirette Amin Danial          20190570
  */
 
@@ -11,13 +11,10 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Stream;
 
 class Parser {
     String commandName;
@@ -25,8 +22,10 @@ class Parser {
 
     //This method will divide the input into commandName and args
     // where "input" is the string command entered by the user
+
     public boolean parse(String input) {
-        //Split the input according to space 
+        //Split the input according to space
+        input = input.trim();
         String[] temp = input.split(" ");
         //Take the command part from the split input 
         commandName = temp[0];
@@ -67,8 +66,14 @@ class Parser {
 public class Terminal {
     Parser parser;
     //Prints the arguments
-    public String[] echo() {
-        return parser.getArgs();
+    public void echo(String[] args) {
+        if(args == null)
+        {
+            System.out.println("echo should take an argument to print it out.");
+        }
+        else
+            System.out.println(args[0]);
+
     }
     //prints the current path
     public String pwd() {
@@ -82,7 +87,6 @@ public class Terminal {
             System.out.println(System.getProperty("user.dir"));
         } else if (args.length == 1) {
             if (args[0].equals("..")) {
-                System.out.println(System.getProperty("user.dir"));
                 Path temp = Paths.get(System.getProperty("user.dir"));
                 System.setProperty("user.dir", String.valueOf(temp.getParent()));
                 System.out.println(System.getProperty("user.dir"));
@@ -251,10 +255,8 @@ public class Terminal {
                 }
                 writeLines.close();
             } catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -276,16 +278,15 @@ public class Terminal {
     }
     public void createAndOrCopyDirectory(File srcDir, File dstDir) {
     	if(!dstDir.exists())
-    	{
-    	
+        {
     		dstDir.mkdir();
     	}
 		int counter = srcDir.list().length;
 		int i = 0;
-		while(i >= counter)
+		while(i < counter)
 		{
-			checkDirChildren(new File(srcDir, srcDir.list()[i]), new File(dstDir, dstDir.list()[i]));
-			counter--;
+			checkDirChildren(new File(srcDir, srcDir.list()[i]), new File(dstDir, srcDir.list()[i]));
+			i++;
 		}
     }
     
@@ -305,6 +306,8 @@ public class Terminal {
     	
     	try (BufferedReader bufferedLines = new BufferedReader(new FileReader(src))) {
             String fileLines = bufferedLines.readLine();
+            dst.createNewFile();
+
             BufferedWriter writeLines = new BufferedWriter(new FileWriter(dst, true));
             while (fileLines != null) {
 
@@ -313,8 +316,8 @@ public class Terminal {
                 fileLines = bufferedLines.readLine();
             }
             writeLines.close();
+
         } catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
     	
@@ -324,7 +327,7 @@ public class Terminal {
     public void chooseCommandAction() {
         switch (parser.getCommandName()) {
             case "echo":
-                echo();
+                echo(parser.getArgs());
                 break;
             case "pwd":
                 pwd();
@@ -342,7 +345,6 @@ public class Terminal {
                 try {
                     mkdir(parser.getArgs());
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
                 break;
@@ -364,7 +366,6 @@ public class Terminal {
                 try {
                     cat(parser.getArgs());
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 } //user.dir
                 break;
@@ -386,13 +387,5 @@ public class Terminal {
             t.parser.parse(scan.nextLine());
             t.chooseCommandAction();
         }
-
-
-        /*try (Scanner scan = new Scanner(System.in)) {
-			t.parser = new Parser();
-			System.out.print(">");
-			t.parser.parse(scan.nextLine());
-		}
-        t.chooseCommandAction();*/
     }
 }
