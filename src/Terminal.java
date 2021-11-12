@@ -146,25 +146,23 @@ public class Terminal {
         if (args == null) {
             System.out.println("Wrong Argument, You should enter one or more argument to create a directory for them");
         } else {	
-            String sl = "\\";
             for (int i = 0; i < args.length; i++) {
-                if (args[i].contains(sl)) {
-                	//Cut that path to names of files to find what's not exists to be created
-                    String[] files = args[i].split("\\\\");
- 
-                    File f = new File(files[i] + "\\" + files[1]);
-                   // System.out.println(f);
-                    for (int j = 2; j <= files.length; j++) {
-                        if (!f.exists()) {
-                            Files.createDirectory(Paths.get(f.getPath()));
-                        }
-                        if (j != files.length)
-                            f = new File(f.getPath() + "\\" + files[j]);
-                    }
-                }else {
-                        //Short or full path case2
-                        Files.createDirectory(Paths.get(shortPathConverter(args[i])));
+                if (!(Paths.get(args[i])).isAbsolute()) {
+                    args[i] = shortPathConverter(args[i]);
                 }
+            }
+            for(int i = 0; i < args.length; i++) {
+                String [] files = args[i].split("\\\\");
+                File f = new File(files[0] + "\\" + files[1]);
+                for(int j = 2; j < files.length; j++)
+                {
+                    if (!f.exists()) {
+                        Files.createDirectory(Paths.get(f.getPath()));
+
+                    }
+                    f = new File(f.getPath()+"\\" + files[j]);
+                }
+                Files.createDirectory(Paths.get(args[i]));
             }
         }
     }
@@ -272,6 +270,22 @@ public class Terminal {
         if (args == null || args.length == 1) {
             System.out.println("Wrong number of arguments");
         } else {
+            if(Paths.get(args[0]).isAbsolute()) {
+                String [] files = args[0].split("\\\\");
+                args[0] = files[files.length-1];
+            }
+            else if(Paths.get(args[1]).isAbsolute()){
+                String [] files = args[1].split("\\\\");
+                args[1] = files[files.length-1];
+            }
+            if(!(args[0].contains(".")))
+            {
+                args[0] += ".txt";
+            }
+            if(!(args[1].contains(".")))
+            {
+                args[1] += ".txt";
+            }
             String sourceFilePath = System.getProperty("user.dir") + "\\" + args[0];
             String dstFilePath = System.getProperty("user.dir") + "\\" + args[1];
             try (BufferedReader bufferedLines = new BufferedReader(new FileReader(sourceFilePath))) {
@@ -283,6 +297,7 @@ public class Terminal {
                     writeLines.append('\n');
                     fileLines = bufferedLines.readLine();
                 }
+                writeLines.append('\n');
                 writeLines.close();
             } catch (FileNotFoundException e) {
 				e.printStackTrace();
