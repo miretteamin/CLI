@@ -4,6 +4,15 @@
  * Mirette Amin Danial          20190570
  */
 
+/* Check
+* 1- short path
+* 2- remove cd res
+* 3- mkdir (not working)
+* 4- rmdir (short path)
+* 5- rmdir (not working)
+*
+*/
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -26,32 +35,45 @@ class Parser {
     public boolean parse(String input) {
         //Split the input according to space
         input = input.trim();
+        String echoCase = input;
         String[] temp = input.split(" ");
-        //Take the command part from the split input 
+        //Take the command part from the split input
         commandName = temp[0];
-        boolean flag = false;
-        //checking whether there are arguments after command part or not 
-        if (temp.length >= 2) {
-            //command with two parts
-            if (temp[1].equals("-r")) {
-                commandName += " -r";
-                flag = true;
-            }
-            //it's a command with two parts, so take the other for agrs
-            if (flag && temp.length >= 3) {
-                args = Arrays.copyOfRange(temp, 2, temp.length);
+        if(commandName.equals("echo")) {
+            if(temp.length > 1){
+                args = new String[1];
+                args[0] = echoCase.substring(5);
                 return true;
-            } else {
-                args = Arrays.copyOfRange(temp, 1, temp.length);
-                if (args == null)
-                    return false;
-                else
-                    return true;
+            }
+            else{
+                return false;
             }
         }
-        //No arguments
         else {
-            return false;
+            boolean flag = false;
+            //checking whether there are arguments after command part or not
+            if (temp.length >= 2) {
+                //command with two parts
+                if (temp[1].equals("-r")) {
+                    commandName += " -r";
+                    flag = true;
+                }
+                //it's a command with two parts, so take the other for args
+                if (flag && temp.length >= 3) {
+                    args = Arrays.copyOfRange(temp, 2, temp.length);
+                    return true;
+                } else {
+                    args = Arrays.copyOfRange(temp, 1, temp.length);
+                    if (args == null)
+                        return false;
+                    else
+                        return true;
+                }
+            }
+            //No arguments
+            else {
+                return false;
+            }
         }
     }
 
@@ -92,10 +114,18 @@ public class Terminal {
                 System.out.println(System.getProperty("user.dir"));
             }
             //QUESTION HERE
-            else if (Files.isDirectory(Paths.get(args[0]))) {
-                System.setProperty("user.dir", args[0]);
+            if(Files.isDirectory(Paths.get(args[0]))) {
+                System.setProperty("user.dir", args[0]);// c:\\rocker, c:\\rocker\test
                 System.out.println(System.getProperty("user.dir"));
-            } else
+            }
+            else if(Files.isDirectory(Paths.get(shortPathConverter(args[0]))))
+            {
+                args[0] = shortPathConverter(args[0]);
+                System.out.println(args[0]);
+                System.setProperty("user.dir",args[0]);
+                System.out.println(System.getProperty("user.dir"));
+            }
+            else
                 System.out.println("Wrong Argument, You should enter no arguments or .. or a full path or the relative (short) path");
         }
     }
@@ -109,7 +139,7 @@ public class Terminal {
         }
     }
 
-    
+
     //By Christina
     public void ls_r() {
         File[] directories = new File(System.getProperty("user.dir")).listFiles();
@@ -122,7 +152,7 @@ public class Terminal {
     • Path (full/short) that ends with a directory name (in this case the new directory is created in the given path*/
     public void mkdir(String[] args) throws IOException {
         if (args == null) {
-            System.out.println("Wrong Argument, You should enter one or more argument to create a directory to them");
+            System.out.println("Wrong Argument, You should enter one or more argument to create a directory for them");
         } else {
             String sl = "\\";
             //It's a path
@@ -147,13 +177,12 @@ public class Terminal {
                     Files.createDirectory(Paths.get(System.getProperty("user.dir")+(args[i])));
                 }
             }
-
         }
     }
 
-    /*rmdir takes 1 argument which is ï¿½*ï¿½ (e.g. rmdir *) and removes all the empty directories 
-     * in the current directory. 
-     * 2. rmdir takes 1 argument which is either the full path or 
+    /*rmdir takes 1 argument which is ï¿½*ï¿½ (e.g. rmdir *) and removes all the empty directories
+     * in the current directory.
+     * 2. rmdir takes 1 argument which is either the full path or
      * the relative (short) path and removes the given directory only if it is empty. */
     public void rmdir(String[] args) {
         if (args.length == 1) {
@@ -304,7 +333,7 @@ public class Terminal {
 			i++;
 		}
     }
-    
+
     public void checkDirChildren(File src, File dst)
     {
     	if(src.isDirectory())
@@ -318,7 +347,7 @@ public class Terminal {
     }
     public void copyFile(File src, File dst)
     {
-    	
+
     	try (BufferedReader bufferedLines = new BufferedReader(new FileReader(src))) {
             String fileLines = bufferedLines.readLine();
             dst.createNewFile();
@@ -335,8 +364,13 @@ public class Terminal {
         } catch (IOException e) {
 			e.printStackTrace();
 		}
-    	
+
     }
+
+    public String shortPathConverter(String sPath){
+        return System.getProperty("user.dir") + '\\' + sPath;
+    }
+
     //C:\Users\CompuStore\OneDrive\Documents\GitHub\CLI
     //This method will choose the suitable command method to be called
     public void chooseCommandAction() {
