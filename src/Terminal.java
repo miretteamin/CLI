@@ -387,6 +387,7 @@ public class Terminal {
                 }
                 break;
             case "rmdir":
+                rmdir(parser.getArgs());
                 break;
             case "touch":
                 touch(parser.getArgs());
