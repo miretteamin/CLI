@@ -7,10 +7,6 @@
 /* Check
 * 1- short path
 * 2- remove cd res
-* 3- mkdir (not working)
-* 4- rmdir (short path)
-* 5- rmdir (not working)
-*
 */
 
 import java.io.BufferedReader;
@@ -112,21 +108,17 @@ public class Terminal {
                 Path temp = Paths.get(System.getProperty("user.dir"));
                 System.setProperty("user.dir", String.valueOf(temp.getParent()));
                 System.out.println(System.getProperty("user.dir"));
+            } else {
+                //QUESTION HERE
+                if (!(Paths.get(args[0])).isAbsolute()) {
+                    args[0] = shortPathConverter(args[0]);
+                }
+                if (Files.isDirectory(Paths.get(args[0]))) {
+                    System.setProperty("user.dir", args[0]);// c:\\rocker, c:\\rocker\test
+                    System.out.println(System.getProperty("user.dir"));
+                } else
+                    System.out.println("Invalid Path/Argument");
             }
-            //QUESTION HERE
-            if(Files.isDirectory(Paths.get(args[0]))) {
-                System.setProperty("user.dir", args[0]);// c:\\rocker, c:\\rocker\test
-                System.out.println(System.getProperty("user.dir"));
-            }
-            else if(Files.isDirectory(Paths.get(shortPathConverter(args[0]))))
-            {
-                args[0] = shortPathConverter(args[0]);
-                System.out.println(args[0]);
-                System.setProperty("user.dir",args[0]);
-                System.out.println(System.getProperty("user.dir"));
-            }
-            else
-                System.out.println("Wrong Argument, You should enter no arguments or .. or a full path or the relative (short) path");
         }
     }
 
@@ -174,7 +166,7 @@ public class Terminal {
             } else {
                 for (int i = 0; i < args.length; i++) {
                     //Short or full path case2
-                    Files.createDirectory(Paths.get(System.getProperty("user.dir")+(args[i])));
+                    Files.createDirectory(Paths.get(shortPathConverter(args[i])));
                 }
             }
         }
@@ -186,7 +178,8 @@ public class Terminal {
      * the relative (short) path and removes the given directory only if it is empty. */
     public void rmdir(String[] args) {
         if (args.length == 1) {
-            if (args[0].contentEquals("*")) {
+            boolean flag = false;
+            if (args[0].equals("*")) {
                 File[] directories = new File(System.getProperty("user.dir")).listFiles(File::isDirectory);
                 for (int i = 0; i < directories.length; i++) {
                     if (!directories[i].toString().contains("System Volume Information")) {
@@ -196,26 +189,22 @@ public class Terminal {
 
                     }
                 }
-            } else if (Files.exists(Paths.get(args[0]))) {
-                File[] directories = new File(args[0]).listFiles(File::isDirectory);
-
-                if (directories.length == 0) {
-                    File fi = new File(args[0]);
-                    fi.delete();
+            } else {
+                if (!(Paths.get(args[0])).isAbsolute()) {
+                    args[0] = shortPathConverter(args[0]);
                 }
-            }
-            //cd then file name
-            else if (Files.exists(Paths.get(System.getProperty("user.dir")+args[0]))) {
-            	
-                File[] directories = new File(System.getProperty("user.dir")+args[0]).listFiles(File::isDirectory);
 
-                if (directories.length == 0) {
-                    File fi = new File(System.getProperty("user.dir")+args[0]);
-                    fi.delete();
+                if (Files.exists(Paths.get(args[0]))) {
+
+                    File[] directories = new File(args[0]).listFiles(File::isDirectory);
+
+                    if (directories.length == 0) {
+                        File fi = new File(args[0]);
+                        fi.delete();
+                    }
+                } else {
+                    System.out.println("Doesn't exist");
                 }
-            }
-            else {
-                System.out.println("NOExists");
             }
 
         } else {
