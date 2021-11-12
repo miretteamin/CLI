@@ -145,28 +145,25 @@ public class Terminal {
     public void mkdir(String[] args) throws IOException {
         if (args == null) {
             System.out.println("Wrong Argument, You should enter one or more argument to create a directory for them");
-        } else {
+        } else {	
             String sl = "\\";
-            //It's a path
-            if (args[0].contains(sl)) {
-            	//Cut that path to names of files to find what's not exists to be created
-                String[] files = args[0].split("\\\\");
-				/*
-				 * for (int j = 0; j < files.length; j++) { System.out.println(files[j]); }
-				 */
-                File f = new File(files[0] + "\\" + files[1]);
-               // System.out.println(f);
-                for (int j = 2; j <= files.length; j++) {
-                    if (!f.exists()) {
-                        Files.createDirectory(Paths.get(f.getPath()));
+            for (int i = 0; i < args.length; i++) {
+                if (args[i].contains(sl)) {
+                	//Cut that path to names of files to find what's not exists to be created
+                    String[] files = args[i].split("\\\\");
+ 
+                    File f = new File(files[i] + "\\" + files[1]);
+                   // System.out.println(f);
+                    for (int j = 2; j <= files.length; j++) {
+                        if (!f.exists()) {
+                            Files.createDirectory(Paths.get(f.getPath()));
+                        }
+                        if (j != files.length)
+                            f = new File(f.getPath() + "\\" + files[j]);
                     }
-                    if (j != files.length)
-                        f = new File(f.getPath() + "\\" + files[j]);
-                }
-            } else {
-                for (int i = 0; i < args.length; i++) {
-                    //Short or full path case2
-                    Files.createDirectory(Paths.get(shortPathConverter(args[i])));
+                }else {
+                        //Short or full path case2
+                        Files.createDirectory(Paths.get(shortPathConverter(args[i])));
                 }
             }
         }
