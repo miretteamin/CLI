@@ -35,22 +35,18 @@ class Parser {
     public boolean parse(String input) {
         //Split the input according to space
         input = input.trim();
+        String echoCase = input;
         String[] temp = input.split(" ");
-        //Take the command part from the split input 
+        //Take the command part from the split input
         commandName = temp[0];
-        if(commandName.equals("echo")){
-            int i = 1;
-            args = new String[1];
-            args[0] = "";
-            while(i < temp.length)
-            {
-                args[0] += temp[i];
-                i++;
-            }
-            if(args == null){
-                return false;
-            }else{
+        if(commandName.equals("echo")) {
+            if(temp.length > 1){
+                args = new String[1];
+                args[0] = echoCase.substring(5);
                 return true;
+            }
+            else{
+                return false;
             }
         }
         else {
@@ -62,7 +58,7 @@ class Parser {
                     commandName += " -r";
                     flag = true;
                 }
-                //it's a command with two parts, so take the other for agrs
+                //it's a command with two parts, so take the other for args
                 if (flag && temp.length >= 3) {
                     args = Arrays.copyOfRange(temp, 2, temp.length);
                     return true;
