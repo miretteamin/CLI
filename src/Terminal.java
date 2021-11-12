@@ -19,12 +19,6 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Stream;
 
-import org.apache.commons.io.FileUtils;
-
-
-
-
-
 class Parser {
     String commandName;
     String[] args;
@@ -149,7 +143,7 @@ public class Terminal {
         }
     }
 
-    /*rmdir takes 1 argument which is “*” (e.g. rmdir *) and removes all the empty directories 
+    /*rmdir takes 1 argument which is ï¿½*ï¿½ (e.g. rmdir *) and removes all the empty directories 
      * in the current directory. 
      * 2. rmdir takes 1 argument which is either the full path or 
      * the relative (short) path and removes the given directory only if it is empty. */
@@ -374,9 +368,8 @@ public class Terminal {
                     e.printStackTrace();
                 } //user.dir
                 break;
-            case ">":
-                break;
-            case ">>":
+            case "exit":
+                System.exit(0);
                 break;
             default:
                 System.out.println("Error: Command not found or invalid parameters are entered!");
