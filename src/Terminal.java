@@ -104,13 +104,11 @@ public class Terminal {
                 System.setProperty("user.dir", String.valueOf(temp.getParent()));
                 //System.out.println(System.getProperty("user.dir"));
             } else {
-                //QUESTION HERE
                 if (!(Paths.get(args[0])).isAbsolute()) {
                     args[0] = shortPathConverter(args[0]);
                 }
                 if (Files.isDirectory(Paths.get(args[0]))) {
-                    System.setProperty("user.dir", args[0]);// c:\\rocker, c:\\rocker\test
-                    //System.out.println(System.getProperty("user.dir"));
+                    System.setProperty("user.dir", args[0]);
                 } else
                     System.out.println("Invalid Path/Argument");
             }
@@ -127,7 +125,6 @@ public class Terminal {
     }
 
 
-    //By Christina
     public void ls_r() {
         File[] directories = new File(System.getProperty("user.dir")).listFiles();
         for (int i = directories.length - 1; i >= 0; i--)
@@ -203,7 +200,12 @@ public class Terminal {
     }
 
     public void touch(String[] args) {
+    	if (!(Paths.get(args[0])).isAbsolute()) {
+            args[0] = shortPathConverter(args[0]);
+        }
         if (args.length == 1) {
+        	if (!args[0].contains("."))
+        		args[0]= args[0]+".txt";
             try {
                 String FolderExists = args[0].substring(0, args[0].lastIndexOf("\\"));
                 if (!Files.exists((Paths.get(FolderExists)))) {
@@ -211,15 +213,22 @@ public class Terminal {
                     // System.out.println("NOFile");
                     mkdir(NonExists);
                 }
-                FileWriter wantedFile = new FileWriter(args[0]);
-                wantedFile.close();
+                if(!Files.exists((Paths.get(args[0]))))
+                {
+                	
+                    FileWriter wantedFile = new FileWriter(args[0]);
+                    wantedFile.close();
+                }
+                else
+                {
+                	System.out.println("Already exists");
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
             System.out.println("Wrong Argument, You should enter one argument");
         }
-
     }
 
 
@@ -312,7 +321,6 @@ public class Terminal {
              File check_2 = new File(secondToBeRead);
              createAndOrCopyDirectory(check_1, check_2);
              File src = new File(check_1, "f1");
-             System.out.println(src);
 
         }
     }
@@ -367,7 +375,6 @@ public class Terminal {
         return System.getProperty("user.dir") + '\\' + sPath;
     }
 
-    //C:\Users\CompuStore\OneDrive\Documents\GitHub\CLI
     //This method will choose the suitable command method to be called
     public void chooseCommandAction() {
         switch (parser.getCommandName()) {
