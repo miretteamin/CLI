@@ -117,19 +117,23 @@ public class Terminal {
             System.out.println(directories[i]);
     }
 
-
+    /*Takes 1 or more arguments and creates a directory for each argument. Each argument can be:
+     *  • Directory name (in this case the new directory is created in the current directory)
+    • Path (full/short) that ends with a directory name (in this case the new directory is created in the given path*/
     public void mkdir(String[] args) throws IOException {
         if (args == null) {
             System.out.println("Wrong Argument, You should enter one or more argument to create a directory to them");
         } else {
             String sl = "\\";
+            //It's a path
             if (args[0].contains(sl)) {
+            	//Cut that path to names of files to find what's not exists to be created
                 String[] files = args[0].split("\\\\");
-                for (int j = 0; j < files.length; j++) {
-                    System.out.println(files[j]);
-                }
+				/*
+				 * for (int j = 0; j < files.length; j++) { System.out.println(files[j]); }
+				 */
                 File f = new File(files[0] + "\\" + files[1]);
-                System.out.println(f);
+               // System.out.println(f);
                 for (int j = 2; j <= files.length; j++) {
                     if (!f.exists()) {
                         Files.createDirectory(Paths.get(f.getPath()));
@@ -140,7 +144,7 @@ public class Terminal {
             } else {
                 for (int i = 0; i < args.length; i++) {
                     //Short or full path case2
-                    Files.createDirectory(Paths.get((args[i])));
+                    Files.createDirectory(Paths.get(System.getProperty("user.dir")+(args[i])));
                 }
             }
 
@@ -170,7 +174,18 @@ public class Terminal {
                     File fi = new File(args[0]);
                     fi.delete();
                 }
-            } else {
+            }
+            //cd then file name
+            else if (Files.exists(Paths.get(System.getProperty("user.dir")+args[0]))) {
+            	
+                File[] directories = new File(System.getProperty("user.dir")+args[0]).listFiles(File::isDirectory);
+
+                if (directories.length == 0) {
+                    File fi = new File(System.getProperty("user.dir")+args[0]);
+                    fi.delete();
+                }
+            }
+            else {
                 System.out.println("NOExists");
             }
 
