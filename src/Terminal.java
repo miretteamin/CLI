@@ -4,11 +4,6 @@
  * Mirette Amin Danial          20190570
  */
 
-/* Check
-* 1- short path
-* 2- remove cd res
-*/
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -102,12 +97,12 @@ public class Terminal {
     public void cd(String[] args) {
         if (args == null) {
             System.setProperty("user.dir", System.getProperty("user.home"));
-            System.out.println(System.getProperty("user.dir"));
+            //System.out.println(System.getProperty("user.dir"));
         } else if (args.length == 1) {
             if (args[0].equals("..")) {
                 Path temp = Paths.get(System.getProperty("user.dir"));
                 System.setProperty("user.dir", String.valueOf(temp.getParent()));
-                System.out.println(System.getProperty("user.dir"));
+                //System.out.println(System.getProperty("user.dir"));
             } else {
                 //QUESTION HERE
                 if (!(Paths.get(args[0])).isAbsolute()) {
@@ -115,7 +110,7 @@ public class Terminal {
                 }
                 if (Files.isDirectory(Paths.get(args[0]))) {
                     System.setProperty("user.dir", args[0]);// c:\\rocker, c:\\rocker\test
-                    System.out.println(System.getProperty("user.dir"));
+                    //System.out.println(System.getProperty("user.dir"));
                 } else
                     System.out.println("Invalid Path/Argument");
             }
